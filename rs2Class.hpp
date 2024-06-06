@@ -1,20 +1,20 @@
-﻿#pragma once
-#include <iostream>
+﻿#pragma once//重複インクルードを防ぐ
+#include <iostream>//必要なヘッダーファイルをインクルード
 #include "librealsense2/rs.hpp"
 #include "librealsense2/rsutil.h"
 #include <opencv2/opencv.hpp>
 
-#define WIDTH 640
-#define HEIGHT 480
-#define FPS 30
+#define WIDTH 1280//フレームの幅定義
+#define HEIGHT 720//フレームの高さ定義
+#define FPS 30//フレームレート定義
 
-typedef std::map<std::string, std::string> DeviceInfo;
-typedef std::map<std::string, DeviceInfo> SensorInfo;
+typedef std::map<std::string, std::string> DeviceInfo;//デバイス商法を格納する為の型定義
+typedef std::map<std::string, DeviceInfo> SensorInfo;//センサー情報を格納する為の型定義
 
 /// <summary>
 /// D455�J��������N���X
 /// </summary>
-class RsCamera
+class RsCamera//カメラ操作をカプセル化
 {
 public:
 	// �R���X�g���N�^
@@ -55,7 +55,7 @@ private:
 /// <summary>
 /// �R���X�g���N�^
 /// </summary>
-RsCamera::RsCamera()
+RsCamera::RsCamera()//コントラスタはカメラの接続を確認し、パイプラインを開始
 {
 	if (isConnectedDevices()) {
 		pipe.start();
@@ -101,7 +101,7 @@ RsCamera::RsCamera(rs2::config cfg, rs2::align _align)
 /// ��ʒ����̐[�x���擾
 /// </summary>
 /// <returns>�[�x�̒l[m]</returns>
-float RsCamera::getCenterDistance()
+float RsCamera::getCenterDistance()//カメラからフレームを取得し、中心ピクセルの距離を計算して返す
 {
 	rs2::frameset frames = pipe.wait_for_frames();
 
@@ -119,7 +119,7 @@ float RsCamera::getCenterDistance()
 /// �J���[�t���[�����擾����
 /// </summary>
 /// <param name="color_image">�t���[���o�͐�</param>
-void RsCamera::getColorFrame(cv::Mat& color_image)
+void RsCamera::getColorFrame(cv::Mat& color_image)//カメラからカラーフレームを取得し、opencvに投げる
 {
 	rs2::frameset frames = pipe.wait_for_frames();
 	rs2::video_frame color_frame = frames.get_color_frame();
@@ -133,7 +133,7 @@ void RsCamera::getColorFrame(cv::Mat& color_image)
 /// �[�x�t���[�����擾����
 /// </summary>
 /// <param name="depth_image">�t���[���o�͐�</param>
-void RsCamera::getDepthFrame(cv::Mat& depth_image)
+void RsCamera::getDepthFrame(cv::Mat& depth_image)//カメラから深度フレームを取得し、カラーマップフィルターを適応してopencvに投げる
 {
 	rs2::frameset frames = pipe.wait_for_frames();
 	rs2::video_frame depth_frame = frames.get_depth_frame().apply_filter(color_map);
@@ -148,7 +148,7 @@ void RsCamera::getDepthFrame(cv::Mat& depth_image)
 /// </summary>
 /// <param name="combo_image">�t���[���o�͐�</param>
 /// <param name="align">�A���C�������g�̐ݒ�</param>
-void RsCamera::getComboFrame(cv::Mat& combo_image)
+void RsCamera::getComboFrame(cv::Mat& combo_image)//カメラからカラーと深度フレームを取得し、整列させる、opencvに投げる
 {
 	rs2::frameset frames = pipe.wait_for_frames();
 	auto aligned_frames = align.process(frames);
@@ -209,10 +209,10 @@ SensorInfo RsCamera::getSensorsInfo()
 /// ���[���h���W�𐄒肷��
 /// </summary>
 /// <param name="depth_image"></param>
-void RsCamera::doDeprojectPosition(cv::Mat& depth_image)
+void RsCamera::doDeprojectPosition(cv::Mat& depth_image)//深度フレームの中心ピクセルを3D空間に投影
 {
-	int x_pix = 3 * WIDTH / 4;
-	int y_pix = HEIGHT / 4;
+	int x_pix = 646;
+	int y_pix = 350;
 	const float pixel[] = { (float)x_pix,(float)y_pix };
 	float point[3];
 
@@ -224,9 +224,9 @@ void RsCamera::doDeprojectPosition(cv::Mat& depth_image)
 
 	rs2_deproject_pixel_to_point(point, &intr, pixel, depth.get_distance(x_pix, y_pix));
 
-
+	//結果を出力
 	//std::cout << "[ " << x_pix << "px, " << y_pix << "px ] = " << "[ " << point[0] << ", " << point[1] << ", " << point[2] << "] \r";
-	std::cout <<  x_pix << ", " << y_pix << " = " << "[ " << point[0] << ", " << point[1] << ", " << point[2] << "] \n";
+	std::cout <<  x_pix << ", " << y_pix << " = " << "[ " << point[0]*1000 << ", " << point[1]*1000 << ", " << point[2]*1000 << "] \n";
 
 
 	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
