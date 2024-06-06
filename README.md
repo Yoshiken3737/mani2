@@ -1,3 +1,3 @@
 # mani2
-master サンプルプルグラム\n
+master サンプルプルグラム
 feature1 2画面表示
