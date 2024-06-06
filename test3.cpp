@@ -12,14 +12,17 @@ try {
 	cfg.enable_stream(RS2_STREAM_DEPTH, WIDTH, HEIGHT, RS2_FORMAT_Z16, FPS);	// Depth
 
 	// Align color stream to depth stream
+	//コンストラクタの引数として用いるので、インスタンスの生成前に定義
 	rs2::align align(RS2_STREAM_DEPTH);
+	//カラー基準にする
+	//rs2::align align(RS2_STREAM_COLOR);
 
 	// RsCamera instance
 	RsCamera camera(cfg, align);
 
 
 	// Display image
-	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3);
+	cv::Mat image(cv::Size(2*WIDTH, HEIGHT), CV_8UC3);
 	while (true)
 	{
 		// カラーフレームを取得
@@ -29,7 +32,7 @@ try {
 		//camera.getDepthFrame(image);
 
 		// カラーフレームとDepthフレームを並べて取得
-		// camera.getComboFrame(image);
+		 //camera.getComboFrame(image);
 
 		camera.doDeprojectPosition(image);
 

@@ -26,10 +26,10 @@ public:
 	~RsCamera() { pipe.stop(); }
 
 
-	float getCenterDistance();
-	void getColorFrame(cv::Mat& color_image);
-	void getDepthFrame(cv::Mat& depth_image);
-	void getComboFrame(cv::Mat& combo_image);
+	//float getCenterDistance();
+	//void getColorFrame(cv::Mat& color_image);
+	//void getDepthFrame(cv::Mat& depth_image);
+	//void getComboFrame(cv::Mat& combo_image);
 	DeviceInfo getDeviceInfoVer2();
 	SensorInfo getSensorsInfo();
 	void doDeprojectPosition(cv::Mat& depth_image);
@@ -94,76 +94,82 @@ RsCamera::RsCamera(rs2::config cfg, rs2::align _align)
 		throw std::runtime_error("ERR: No cameras are connected.");
 	}
 
-	align = _align;
+	align = _align;//変数初期化
 }
 
 /// <summary>
 /// ��ʒ����̐[�x���擾
 /// </summary>
 /// <returns>�[�x�̒l[m]</returns>
-float RsCamera::getCenterDistance()//カメラからフレームを取得し、中心ピクセルの距離を計算して返す
-{
-	rs2::frameset frames = pipe.wait_for_frames();
+//float RsCamera::getCenterDistance()//カメラからフレームを取得し、中心ピクセルの距離を計算して返す
+//{
+//	rs2::frameset frames = pipe.wait_for_frames();
 
-	rs2::depth_frame depth = frames.get_depth_frame();
+//	rs2::depth_frame depth = frames.get_depth_frame();
 
-	auto width = depth.get_width();
-	auto height = depth.get_height();
+//	auto width = depth.get_width();
+//	auto height = depth.get_height();
 
-	float distance_to_center = depth.get_distance(width / 2, height / 2);
+//	float distance_to_center = depth.get_distance(width / 2, height / 2);
 
-	return distance_to_center;
-}
+//	return distance_to_center;
+//}
 
 /// <summary>
 /// �J���[�t���[�����擾����
 /// </summary>
 /// <param name="color_image">�t���[���o�͐�</param>
-void RsCamera::getColorFrame(cv::Mat& color_image)//カメラからカラーフレームを取得し、opencvに投げる
-{
-	rs2::frameset frames = pipe.wait_for_frames();
-	rs2::video_frame color_frame = frames.get_color_frame();
+/// 
+/// 
+/// 
+//void RsCamera::getColorFrame(cv::Mat& color_image)//カメラからカラーフレームを取得し、opencvに投げる
+//{
+//	rs2::frameset frames = pipe.wait_for_frames();
+//	rs2::video_frame color_frame = frames.get_color_frame();
 
-	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
+//	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
 
-	image.copyTo(color_image);
-}
+//	image.copyTo(color_image);
+//}
 
 /// <summary>
 /// �[�x�t���[�����擾����
 /// </summary>
 /// <param name="depth_image">�t���[���o�͐�</param>
-void RsCamera::getDepthFrame(cv::Mat& depth_image)//カメラから深度フレームを取得し、カラーマップフィルターを適応してopencvに投げる
-{
-	rs2::frameset frames = pipe.wait_for_frames();
-	rs2::video_frame depth_frame = frames.get_depth_frame().apply_filter(color_map);
+/// 
+/// 
+/// 
+//void RsCamera::getDepthFrame(cv::Mat& depth_image)//カメラから深度フレームを取得し、カラーマップフィルターを適応してopencvに投げる
+//{
+//	rs2::frameset frames = pipe.wait_for_frames();
+//	rs2::video_frame depth_frame = frames.get_depth_frame().apply_filter(color_map);
 
-	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
+//	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
 
-	image.copyTo(depth_image);
-}
+//	image.copyTo(depth_image);
+//}
 
 /// <summary>
 /// �J���[�t���[����Depth�t���[�����擾����
 /// </summary>
 /// <param name="combo_image">�t���[���o�͐�</param>
 /// <param name="align">�A���C�������g�̐ݒ�</param>
-void RsCamera::getComboFrame(cv::Mat& combo_image)//カメラからカラーと深度フレームを取得し、整列させる、opencvに投げる
-{
-	rs2::frameset frames = pipe.wait_for_frames();
-	auto aligned_frames = align.process(frames);
+//void RsCamera::getComboFrame(cv::Mat& combo_image)//カメラからカラーと深度フレームを取得し、整列させる、opencvに投げる
+//{
+//	rs2::frameset frames = pipe.wait_for_frames();
+//	auto aligned_frames = align.process(frames);
 
-	rs2::video_frame color_frame = aligned_frames.get_color_frame();
-	rs2::video_frame depth_frame = aligned_frames.get_depth_frame().apply_filter(color_map);
+//	rs2::video_frame color_frame = aligned_frames.get_color_frame();
+//	rs2::video_frame depth_frame = aligned_frames.get_depth_frame().apply_filter(color_map);
 
-	cv::Mat color_image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
-	cv::Mat depth_image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
+//	cv::Mat color_image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
+//	cv::Mat depth_image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
 
-	cv::Mat color_positon(combo_image, cv::Rect(0, 0, WIDTH, HEIGHT));
-	color_image.copyTo(color_positon);
-	cv::Mat depth_positon(combo_image, cv::Rect(WIDTH, 0, WIDTH, HEIGHT));
-	depth_image.copyTo(depth_positon);
-}
+//	cv::Mat color_positon(combo_image, cv::Rect(0, 0, WIDTH, HEIGHT));
+//	color_image.copyTo(color_positon);
+//	cv::Mat depth_positon(combo_image, cv::Rect(WIDTH, 0, WIDTH, HEIGHT));
+//	depth_image.copyTo(depth_positon);
+//}
 
 /// <summary>
 /// �f�o�C�X�����擾����
@@ -216,22 +222,46 @@ void RsCamera::doDeprojectPosition(cv::Mat& depth_image)//深度フレームの�
 	const float pixel[] = { (float)x_pix,(float)y_pix };
 	float point[3];
 
+
+	//フレームの受け取り　パイプラインにフレーム要求
 	rs2::frameset frames = pipe.wait_for_frames();
+	//ピクセルアライメント
 	auto aligned_frames = align.process(frames);
 
+	//RGBフレーム取得
+	rs2::video_frame color_frame = aligned_frames.get_color_frame();
+	//
+
+	//カラーマップ化した深度画像を生成
 	rs2::depth_frame depth = aligned_frames.get_depth_frame();
 	rs2::video_frame depth_frame = depth.apply_filter(color_map);
 
+
+	//第1引数では，ワールド座標[メートル]に変換後の結果を受け取ります．
+	//第2引数には，カメラの内部パラメータを指定します．
+	//第3引数には，参照したいxy座標[ピクセル]が入った配列を指定します．
+	//第4引数には，第3引数で指定された座標の深度が入ります．
 	rs2_deproject_pixel_to_point(point, &intr, pixel, depth.get_distance(x_pix, y_pix));
 
 	//結果を出力
 	//std::cout << "[ " << x_pix << "px, " << y_pix << "px ] = " << "[ " << point[0] << ", " << point[1] << ", " << point[2] << "] \r";
 	std::cout <<  x_pix << ", " << y_pix << " = " << "[ " << point[0]*1000 << ", " << point[1]*1000 << ", " << point[2]*1000 << "] \n";
 
-
+	//フレームの格納
+	// 
+	// イメージに貼り付け
+	//
+	cv::Mat color_image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
+	//
 	cv::Mat image(cv::Size(WIDTH, HEIGHT), CV_8UC3, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
 
-	image.copyTo(depth_image);
+	//デカいイメージに貼り付け
+	cv::Mat color_positon(depth_image, cv::Rect(0, 0, WIDTH, HEIGHT));
+	color_image.copyTo(color_positon);
+	cv::Mat depth_positon(depth_image, cv::Rect(WIDTH, 0, WIDTH, HEIGHT));
+	image.copyTo(depth_positon);
+
+
 }
 
 /*********************************************************
